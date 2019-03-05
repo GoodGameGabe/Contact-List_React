@@ -1,14 +1,24 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Context } from "../store/appContext.jsx";
+import { Link } from "react-router-dom";
+
 
 class Modal extends React.Component{
-	constructor(){
-		super();
+	constructor(props){
+		super(props);
 		this.state = {
+			history: props.history,
+			show: props.show
 				// Initialize your state
 		};
 	}
+	
+	dead = () => {
+		this.setState({ show: false });	
+	}
+	
 		
 	render(){
 		return (
@@ -18,7 +28,10 @@ class Modal extends React.Component{
 						<div className="modal-header">
 							<h5 className="modal-title">Are you sure?</h5>
 							{ (this.props.onClose) ?
-								<button onClick={() => this.props.onClose()} type="button" className="close" data-dismiss="modal" aria-label="Close">
+								<button onClick={() => this.props.onClose()} type="button" 
+									className="close" 
+									data-dismiss="modal" 
+									aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 									:''
@@ -28,8 +41,34 @@ class Modal extends React.Component{
 							<p>Warning: unknown consequences after this point... Kidding!</p>
 						</div>
 						<div className="modal-footer">
-							<button type="button" className="btn btn-primary">Oh no!</button>
-							<button type="button" className="btn btn-secondary" data-dismiss="modal">Do it!</button>
+							
+							{/* Keep it Button */}
+							<button 
+								type="button" 
+								className="btn btn-primary"
+								onClick={()=>this.dead}
+								>
+								Oh no!
+							</button>
+							
+							{/* Delete Button */}
+							<Context.Consumer>
+								{({ store, actions }) => {
+									return (
+										<Link to={"/"}>
+											<button 
+												type="button"
+												onClick={() => actions.deleteContact()
+												}
+												className="btn btn-secondary" 
+												data-dismiss="modal">
+												Do it!
+											</button>
+										</Link>
+									);
+								}}
+							</Context.Consumer>
+							
 						</div>
 					</div>
 				</div>
@@ -55,5 +94,6 @@ Modal.propTypes = {
 Modal.defaultProps = {
 	show: false,
 	onClose: null
+	
 };
 export default withRouter(Modal);
